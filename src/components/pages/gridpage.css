@@ -1,0 +1,7 @@
+.loading-msg {
+  text-align: center;
+}
+
+.loading-msg * {
+  display: inline-block;
+}

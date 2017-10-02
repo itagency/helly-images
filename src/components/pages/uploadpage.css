@@ -1,0 +1,16 @@
+.uploadpage-form {
+  padding: 10px;
+}
+
+.uploadpage-form .form-group {
+  margin: 30px auto;
+}
+
+.uploadpage-intro h1 {
+  color: #DF1C2E;
+  font-size: 2rem;
+}
+
+.uploadpage-intro p {
+  color: #242424;
+}
