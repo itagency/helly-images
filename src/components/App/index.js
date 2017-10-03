@@ -4,7 +4,7 @@ import {
   Route,
   Link
 } from 'react-router-dom';
-import Pages from './components/pages';
+import Pages from '../pages';
 import './App.css';
 
 const App = () => {
