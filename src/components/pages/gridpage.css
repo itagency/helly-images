@@ -5,3 +5,40 @@
 .loading-msg * {
   display: inline-block;
 }
+
+.grid__upload {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.grid__button {
+  height: 50px;
+  background: #DF1C2E;
+  color: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  border: none;
+  text-align: center;
+  font-size: 20px;
+  line-height: 2.5em;
+  box-shadow: 0 -3px 3px rgba(0, 0, 0, .1);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+ 
+}
+
+.grid__button:hover,
+.grid__button:focus {
+  text-decoration: none;
+  color: white;
+  background: #DD081E;
+}

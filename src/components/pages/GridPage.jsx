@@ -1,10 +1,12 @@
 import React from 'react';
 import Gallery from 'react-photo-gallery';
 import Lightbox from 'react-images';
-import jsonp from 'jsonp';
 import Measure from 'react-measure';
 import ReactLoading from 'react-loading';
 import { debounce } from '../../utils';
+import {
+  Link
+} from 'react-router-dom';
 
 import './gridpage.css';
 
@@ -39,45 +41,31 @@ export default class GridPage extends React.Component {
       return;
     }
 
-    const urlParams = {
-      api_key: '372ef3a005d9b9df062b8240c326254d',
-      photoset_id: '72157680705961676',
-      user_id: '57933175@N08',
-      format: 'json',
-      per_page: '21',
-      page: this.state.pageNum,
-      extras: 'url_m,url_c,url_l,url_h,url_o',
-    };
+    let url = 'https://hellyhansen.itagency.ca/get_images';
 
-    let url = 'https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos';
-    url = Object.keys(urlParams).reduce((acc, item) => {
-      return acc + '&' + item + '=' + urlParams[item];
-    }, url);
-
-    jsonp(url, { name: 'jsonFlickrApi' }, (err, data) => {
-      let photos = data.photoset.photo.map(item => {
-        let aspectRatio = parseFloat(item.width_o / item.height_o);
-        return {
-          src: aspectRatio >= 3 ? item.url_c : item.url_m,
-          width: parseInt(item.width_o),
-          height: parseInt(item.height_o),
-          title: item.title,
-          alt: item.title,
-          srcSet: [
-            `${item.url_m} ${item.width_m}w`,
-            `${item.url_c} ${item.width_c}w`,
-            `${item.url_l} ${item.width_l}w`,
-            `${item.url_h} ${item.width_h}w`,
-          ],
-          sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
-        };
+    fetch(url)
+      .then(res => res.json())
+      .then(photos => {
+        let photoSet = [];
+        photos.map((p, i) => {
+          return photoSet.push({
+            src: p.url,
+            srcSet: [
+              `https://res.cloudinary.com/dyxr54inb/image/upload/w_1024/${p.public_id}.${p.format} 1024w`,
+              `https://res.cloudinary.com/dyxr54inb/image/upload/w_800/${p.public_id}.${p.format} 800w`,
+              `https://res.cloudinary.com/dyxr54inb/image/upload/w_500/${p.public_id}.${p.format} 500w`,
+              `https://res.cloudinary.com/dyxr54inb/image/upload/w_320/${p.public_id}.${p.format} 320w`,
+            ],
+            sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
+            width: p.width,
+            height: p.height
+          })
+        });
+        this.setState({
+          photos: photoSet,
+          loadedAll: true
+        });
       });
-      this.setState({
-        photos: this.state.photos ? this.state.photos.concat(photos) : photos,
-        pageNum: this.state.pageNum + 1,
-        totalPages: data.photoset.pages,
-      });
-    });
   }
   openLightbox(event, obj) {
     this.setState({
@@ -143,7 +131,7 @@ export default class GridPage extends React.Component {
   render() {
     if (this.state.photos) {
       return (
-        <div className="App">
+        <div className="grid">
           {this.renderGallery()}
           <Lightbox
             theme={{ container: { background: 'rgba(0, 0, 0, 0.85)' } }}
@@ -162,6 +150,9 @@ export default class GridPage extends React.Component {
               <ReactLoading type="bars" color="#DF1C2E" delay={0} />
             </div>
           )}
+          <div className="grid__upload">
+            <Link to="/upload_image" className="grid__button">Upload your photos</Link>
+          </div>
         </div>
       );
     } else {
