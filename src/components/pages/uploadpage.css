@@ -27,7 +27,7 @@
   right: 0;
 }
 
-.grid__button {
+.grid__button, .fileContainer {
   height: 50px;
   background: #DF1C2E;
   color: white;
@@ -55,8 +55,34 @@
 }
 
 .grid__button:hover,
-.grid__button:focus {
+.grid__button:focus,
+.fileContainer:hover,
+.fileContainer:focus {
   text-decoration: none;
   color: white;
   background: #DD081E;
+}
+
+.grid__button:disabled {
+  background: #ccc;
+  color: #686868;
+}
+
+.fileContainer {
+  overflow: hidden;
+  position: relative;
+}
+
+.fileContainer [type=file] {
+  cursor: inherit;
+  display: block;
+  font-size: 999px;
+  filter: alpha(opacity=0);
+  min-height: 100%;
+  min-width: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  text-align: right;
+  top: 0;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 // import axios from 'axios';
-import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, Input } from 'reactstrap';
 import { uploadImage, uploadFailed } from '../../actions';
 import {
   Link
@@ -14,20 +14,15 @@ export class UploadPage extends React.Component {
     super(props);
 
     this.state = {
-      imagePreviewUrl: ''
+      imagePresent: false
     };
   }
 
   _handleImageChange(e) {
     e.preventDefault();
-
-    let reader = new FileReader();
-
-    reader.onloadend = () => {
-      this.setState({
-        imagePreviewUrl: reader.result
-      })
-    }
+    this.setState({
+      imagePresent: !this.state.imagePresent
+    })
   }
 
   render() {
@@ -51,14 +46,9 @@ export class UploadPage extends React.Component {
             <Label for="uploaderName">Name*</Label>
             <Input type="text" name="uploaderName" id="uploaderName" placeholder="John Doe" />
           </FormGroup>
-          <FormGroup>
-            <Label for="imageFile">Image*</Label>
+          <FormGroup className="fileContainer">
             <Input type="file" name="imageFile" id="imageFile" onChange={(e) => this._handleImageChange(e)} />
             {$imagePreview}
-            <FormText color="muted">
-              This is some placeholder block-level help text for the above input.
-              It's a bit lighter and easily wraps to a new line.
-            </FormText>
           </FormGroup>
           <FormGroup>
             <Label for="description">Description*</Label>
@@ -66,7 +56,7 @@ export class UploadPage extends React.Component {
           </FormGroup>
           <Link to="/">Cancel upload</Link>
           <div className="grid__upload">
-            <button type="submit" className="grid__button">Upload your photos</button>
+            <button type="submit" className="grid__button" disabled={!this.state.imagePresent}>Upload Photo</button>
           </div>
         </Form>
       </div>
