@@ -43,11 +43,11 @@ export default class GridPage extends React.Component {
       return;
     }
 
-    let url = 'https://hellyhansen.itagency.ca/get_images';
+    const cursor = this.state.nextCursor ? `?next_cursor=${this.state.nextCursor}` : '';
+
+    let url = `https://hellyhansen.itagency.ca/get_images${cursor}`;
     let self = this;
-    axios.get(url, {
-      next_cursor: self.state.nextCursor
-    })
+    axios.get(url)
     .then(function (response) {
       let photoSet = self.state.photos;
       let images = response.data.images;
@@ -66,9 +66,9 @@ export default class GridPage extends React.Component {
         });
       });
       self.setState({
-        nextCursor: response.data.next_cursor,
+        nextCursor: response.data.next_cursor ? response.data.next_cursor : null,
         photos: photoSet,
-        loadedAll: true
+        loadedAll: response.data.next_cursor? false : true
       });
     })
     .catch(function (error) {
