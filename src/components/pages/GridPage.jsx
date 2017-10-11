@@ -5,6 +5,7 @@ import Lightbox from 'react-images';
 import Measure from 'react-measure';
 import ReactLoading from 'react-loading';
 import { debounce } from '../../utils';
+import HHImage from '../HHImage';
 import {
   Link
 } from 'react-router-dom';
@@ -62,7 +63,7 @@ export default class GridPage extends React.Component {
           sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
           width: p.width,
           height: p.height
-        })
+        });
       });
       self.setState({
         nextCursor: response.data.next_cursor,
@@ -126,7 +127,7 @@ export default class GridPage extends React.Component {
                 photos={this.state.photos}
                 columns={columns}
                 onClick={this.openLightbox}
-              //  ImageComponent={CustomImage}
+                ImageComponent={HHImage}
               />
             </div>
           }

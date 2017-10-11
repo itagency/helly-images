@@ -1,0 +1,21 @@
+.hhimage {
+    display: block;
+    float: left;
+    margin: 2px;
+    cursor: pointer;
+    width: calc(33% - 3px);
+    position: relative;
+}
+
+.hhimage:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.hhimage img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
