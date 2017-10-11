@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Gallery from 'react-photo-gallery';
 import Lightbox from 'react-images';
 import Measure from 'react-measure';
@@ -13,7 +14,7 @@ import './gridpage.css';
 export default class GridPage extends React.Component {
   constructor() {
     super();
-    this.state = { photos: null, pageNum: 1, totalPages: 1, loadedAll: false, currentImage: 0, width: -1 };
+    this.state = { photos: [], pageNum: 1, totalPages: 1, loadedAll: false, currentImage: 0, width: -1, nextCursor: null };
     this.handleScroll = this.handleScroll.bind(this);
     this.loadMorePhotos = this.loadMorePhotos.bind(this);
     this.closeLightbox = this.closeLightbox.bind(this);
@@ -27,8 +28,8 @@ export default class GridPage extends React.Component {
     window.addEventListener('scroll', this.handleScroll);
   }
   handleScroll() {
-    let scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
-    if (window.innerHeight + scrollY >= document.body.offsetHeight - 50) {
+    // let scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
+    if (!this.state.loadedAll) {
       this.loadMorePhotos();
     }
   }
@@ -42,30 +43,36 @@ export default class GridPage extends React.Component {
     }
 
     let url = 'https://hellyhansen.itagency.ca/get_images';
-
-    fetch(url)
-      .then(res => res.json())
-      .then(photos => {
-        let photoSet = [];
-        photos.map((p, i) => {
-          return photoSet.push({
-            src: p.url,
-            srcSet: [
-              `https://res.cloudinary.com/dyxr54inb/image/upload/w_1024/${p.public_id}.${p.format} 1024w`,
-              `https://res.cloudinary.com/dyxr54inb/image/upload/w_800/${p.public_id}.${p.format} 800w`,
-              `https://res.cloudinary.com/dyxr54inb/image/upload/w_500/${p.public_id}.${p.format} 500w`,
-              `https://res.cloudinary.com/dyxr54inb/image/upload/w_320/${p.public_id}.${p.format} 320w`,
-            ],
-            sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
-            width: p.width,
-            height: p.height
-          })
-        });
-        this.setState({
-          photos: photoSet,
-          loadedAll: true
-        });
+    let self = this;
+    axios.get(url, {
+      next_cursor: self.state.nextCursor
+    })
+    .then(function (response) {
+      let photoSet = self.state.photos;
+      let images = response.data.images;
+      images.map((p, i) => {
+        return photoSet.push({
+          src: p.url,
+          srcSet: [
+            `https://res.cloudinary.com/dyxr54inb/image/upload/w_1024/${p.public_id}.${p.format} 1024w`,
+            `https://res.cloudinary.com/dyxr54inb/image/upload/w_800/${p.public_id}.${p.format} 800w`,
+            `https://res.cloudinary.com/dyxr54inb/image/upload/w_500/${p.public_id}.${p.format} 500w`,
+            `https://res.cloudinary.com/dyxr54inb/image/upload/w_320/${p.public_id}.${p.format} 320w`,
+          ],
+          sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
+          width: p.width,
+          height: p.height
+        })
       });
+      self.setState({
+        nextCursor: response.data.next_cursor,
+        photos: photoSet,
+        loadedAll: true
+      });
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
   }
   openLightbox(event, obj) {
     this.setState({

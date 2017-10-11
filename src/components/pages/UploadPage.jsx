@@ -1,15 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
 // import axios from 'axios';
 import { Form, FormGroup, Label, Input } from 'reactstrap';
-import { uploadImage, uploadFailed } from '../../actions';
 import {
   Link
 } from 'react-router-dom';
 
 import './uploadpage.css';
 
-export class UploadPage extends React.Component {
+class UploadPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -64,18 +62,4 @@ export class UploadPage extends React.Component {
   }
 };
 
-const mapStateToProps = (state, ownProps) => ({
-  upload: state.upload
-});
-
-const mapDispatchToProps = {
-  uploadImage,
-  uploadFailed
-};
-
-const UploadPageContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(UploadPage);
-
-export default UploadPageContainer;
+export default UploadPage;
