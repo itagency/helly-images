@@ -29,7 +29,7 @@ export default class GridPage extends React.Component {
   }
   componentDidMount() {
     this.loadMorePhotos();
-    this.loadMorePhotos = debounce(this.loadMorePhotos, 200);
+    this.loadMorePhotos = debounce(this.loadMorePhotos, 1000);
     window.addEventListener('scroll', this.handleScroll);
   }
   handleScroll() {
@@ -55,16 +55,20 @@ export default class GridPage extends React.Component {
     .then(function (response) {
       let photoSet = self.state.photos;
       let images = response.data.images;
-      console.log(images);
       images.map((p, i) => {
         let altText = '';
         let captionText = '';
+        let descriptionText;
         if (p.context) {
           altText = p.context.custom.alt !== '' ? p.context.custom.alt : '';
           captionText = p.context.custom.caption !== '' ? p.context.custom.caption : '';
-          console.log('its running');
-          console.log(altText);
-          console.log(captionText);
+          if (altText && captionText) {
+            descriptionText = `${altText} | ${captionText}`;
+          } else if (altText && !captionText) {
+            descriptionText = altText;
+          } else if (!altText && captionText) {
+            descriptionText = captionText
+          }
         }
         return photoSet.push({
           src: p.url,
@@ -77,7 +81,7 @@ export default class GridPage extends React.Component {
           sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
           width: p.width,
           height: p.height,
-          alt: `${altText} | ${captionText}`
+          alt: descriptionText
         });
       });
       self.setState({

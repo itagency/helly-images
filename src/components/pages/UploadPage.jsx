@@ -69,7 +69,6 @@ class UploadPage extends React.Component {
       })
     })
     .catch((error) => {
-      console.log(error);
       formData = {};
       imageData = [];
       name = '';
