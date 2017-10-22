@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import {
   Link
@@ -16,10 +17,23 @@ class UploadPage extends React.Component {
     this.state = {
       imagePresent: false,
       loading: false,
-      loadingText: 'Upload Photo'
+      loadingText: 'Upload Photo',
+      successMessage: '',
+      uploadFailed: true
     };
 
-    this._handleUpload = this._handleUpload.bind(this);
+    this._handleSubmit = this._handleSubmit.bind(this);
+  }
+
+  componentDidUpdate() {
+    if (this.state.uploadFailed) {
+      setTimeout(() => {
+        this.setState({
+          successMessage: '',
+          uploadFailed: false
+        })
+      }, 5000)
+    }
   }
 
   _handleImageChange(event) {
@@ -29,7 +43,7 @@ class UploadPage extends React.Component {
     })
   }
 
-  _handleUpload = (event) => {
+  _handleSubmit = (event, values) => {
     event.preventDefault();
 
     this.setState({
@@ -38,9 +52,9 @@ class UploadPage extends React.Component {
     })
 
     let formData = new FormData();
-    const imageData = document.querySelector('input[type="file"]').files[0];
-    const name = document.getElementById('uploaderName').value;
-    const description = document.getElementById('description').value;
+    let imageData = document.querySelector('input[type="file"]').files[0];
+    let name = document.getElementById('uploaderName').value;
+    let description = document.getElementById('description').value;
     formData.append('imageFile', imageData);
     formData.append('name', name);
     formData.append('description', description);
@@ -50,23 +64,23 @@ class UploadPage extends React.Component {
       window.location.replace(response.data.redirect);
       this.setState({
         loading: false,
-        loadingText: 'Upload Image'
+        loadingText: 'Upload Image',
+        successMessage: 'Upload success... redirecting.'
       })
     })
     .catch((error) => {
       console.log(error);
+      formData = {};
+      imageData = [];
+      name = '';
+      description = '';
+      this.setState({
+        loading: false,
+        loadingText: 'Upload Image',
+        successMessage: 'Upload failed... please try again.',
+        uploadFailed: true
+      })
     });
-
-    // let file = e.target.files[0];
-
-    // const formData = new FormData();
-
-    // formData.append('file', file);
-    // formData.append('tags', 'test');
-
-    // console.log(formData);
-    // console.log(BASE_URL);
-    
   }
 
   render() {
@@ -77,24 +91,37 @@ class UploadPage extends React.Component {
           <h1>Send your photos</h1>
           <p>Share your photos with everyone at the event. Simply fill out the form below to submit your images for approval.</p>
         </div>
-        <Form onSubmit={this._handleUpload}>
+        <AvForm onSubmit={this._handleSubmit}>
           <FormGroup>
-            <Label for="uploaderName">Name*</Label>
-            <Input type="text" name="uploaderName" id="uploaderName" placeholder="John Doe" />
+            <AvField 
+              type="text" 
+              label="Name*" 
+              name="uploaderName" 
+              id="uploaderName" 
+              placeholder="John Doe" 
+              validate={{maxLength: {value: 30}, minLength: {value: 3}}} 
+              required />
+          </FormGroup>
+          <FormGroup>
+            <AvField 
+              type="textarea" 
+              label="Description*" 
+              name="description" 
+              id="description" 
+              placeholder="A short description of this photo..."
+              validate={{maxLength: {value: 70}, minLength: {value: 5}}}
+              required />
           </FormGroup>
           <FormGroup className="fileContainer">
             <Input type="file" name="imageFile" id="imageFile" onChange={(e) => this._handleImageChange(e)} />
             <div>Select an image</div>
           </FormGroup>
-          <FormGroup>
-            <Label for="description">Description*</Label>
-            <Input type="textarea" name="description" id="description" placeholder="A description of this photo..." />
-          </FormGroup>
-          <Link to="/">Cancel upload</Link>
           <div className="grid__upload">
+            <Link to="/" className="cancel-button">Cancel upload</Link>
+            <p className={`success-text${this.state.uploadFailed ? ' failed' : ''}`}>{this.state.successMessage}</p>
             <button type="submit" className="grid__button" disabled={!this.state.imagePresent || this.state.loading}>{this.state.loadingText}</button>
           </div>
-        </Form>
+        </AvForm>
       </div>
     );
   }

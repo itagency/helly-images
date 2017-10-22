@@ -27,7 +27,8 @@
   right: 0;
 }
 
-.grid__button, .fileContainer {
+.grid__button,
+.fileContainer {
   height: 50px;
   background: #DF1C2E;
   color: white;
@@ -39,6 +40,7 @@
   font-size: 20px;
   line-height: 2.5em;
   box-shadow: 0 -3px 3px rgba(0, 0, 0, .1);
+  border-radius: 0;
   -webkit-touch-callout: none;
   /* iOS Safari */
   -webkit-user-select: none;
@@ -85,4 +87,25 @@
   right: 0;
   text-align: right;
   top: 0;
+}
+
+.success-text {
+  text-align: center;
+  font-size: 13px;
+  width: 100%;
+  padding: 5px 0;
+  color: rgb(8, 221, 79);
+  margin-bottom: 52px;
+}
+
+.success-text.failed {
+  color: #DD081E;
+}
+
+.cancel-button {
+  text-align: center;
+  width: 100%;
+  margin: -10px auto 0;
+  display: block;
+  color: #ccc;
 }
