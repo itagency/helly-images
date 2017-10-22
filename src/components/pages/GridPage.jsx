@@ -10,7 +10,11 @@ import {
   Link
 } from 'react-router-dom';
 
+import { BASE_URL } from '../../constants';
+
 import './gridpage.css';
+
+const CLOUDINARY_SPACE = process.env.NODE_ENV === 'development' ? 'dwd2ufxeu' : 'dyxr54inb';
 
 export default class GridPage extends React.Component {
   constructor() {
@@ -45,24 +49,35 @@ export default class GridPage extends React.Component {
 
     const cursor = this.state.nextCursor ? `?next_cursor=${this.state.nextCursor}` : '';
 
-    let url = `https://hellyhansen.itagency.ca/get_images${cursor}`;
+    let url = BASE_URL + cursor;
     let self = this;
     axios.get(url)
     .then(function (response) {
       let photoSet = self.state.photos;
       let images = response.data.images;
+      console.log(images);
       images.map((p, i) => {
+        let altText = '';
+        let captionText = '';
+        if (p.context) {
+          altText = p.context.custom.alt !== '' ? p.context.custom.alt : '';
+          captionText = p.context.custom.caption !== '' ? p.context.custom.caption : '';
+          console.log('its running');
+          console.log(altText);
+          console.log(captionText);
+        }
         return photoSet.push({
           src: p.url,
           srcSet: [
-            `https://res.cloudinary.com/dyxr54inb/image/upload/w_1024/${p.public_id}.${p.format} 1024w`,
-            `https://res.cloudinary.com/dyxr54inb/image/upload/w_800/${p.public_id}.${p.format} 800w`,
-            `https://res.cloudinary.com/dyxr54inb/image/upload/w_500/${p.public_id}.${p.format} 500w`,
-            `https://res.cloudinary.com/dyxr54inb/image/upload/w_320/${p.public_id}.${p.format} 320w`,
+            `https://res.cloudinary.com/${CLOUDINARY_SPACE}/image/upload/w_1024/q_auto:eco/${p.public_id}.${p.format} 1024w`,
+            `https://res.cloudinary.com/${CLOUDINARY_SPACE}/image/upload/w_800/q_auto:eco/${p.public_id}.${p.format} 800w`,
+            `https://res.cloudinary.com/${CLOUDINARY_SPACE}/image/upload/w_500/q_auto:eco/${p.public_id}.${p.format} 500w`,
+            `https://res.cloudinary.com/${CLOUDINARY_SPACE}/image/upload/w_320/q_auto:eco/${p.public_id}.${p.format} 320w`,
           ],
           sizes: ['(min-width: 480px) 50vw', '(min-width: 1024px) 33.3vw', '100vw'],
           width: p.width,
-          height: p.height
+          height: p.height,
+          alt: `${altText} | ${captionText}`
         });
       });
       self.setState({
@@ -143,7 +158,7 @@ export default class GridPage extends React.Component {
           {this.renderGallery()}
           <Lightbox
             theme={{ container: { background: 'rgba(0, 0, 0, 0.85)' } }}
-            images={this.state.photos.map(x => ({ ...x, srcset: x.srcSet, caption: x.title }))}
+            images={this.state.photos.map(x => ({ ...x, srcset: x.srcSet, caption: x.alt }))}
             backdropClosesModal={true}
             onClose={this.closeLightbox}
             onClickPrev={this.gotoPrevious}
